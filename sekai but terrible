@@ -1,0 +1,127 @@
+ArrayList<Note> player1Notes = new ArrayList<Note>(); //these 2 lines are done by my brother
+ArrayList<Note> player2Notes = new ArrayList<Note>();
+
+int player1Score = 0;
+int player2Score = 0;
+
+void setup() {
+  size(800, 600);
+  textAlign(CENTER, CENTER);
+  spawnNotes(); 
+}
+
+void draw() {
+  background(0);
+  
+
+  drawLanes();
+
+
+  updateNotes(player1Notes, color(0, 255, 255), 150); 
+  updateNotes(player2Notes, color(255, 0, 255), 600);
+
+
+  fill(255);
+  textSize(32);
+  text("Player 1 Score: " + player1Score, 200, 50);
+  text("Player 2 Score: " + player2Score, 600, 50);
+}
+
+
+void drawLanes() {
+  stroke(255);
+  line(150, 0, 150, height);  
+  line(230, 0, 230, height);  
+  line(600, 0, 600, height);  
+  line(680, 0, 680, height);  
+  line(150, 460, 230, 460);
+  line(150, 500, 230, 500);
+}
+
+
+void updateNotes(ArrayList<Note> notes, color noteColor, int xPos) { //this part as well
+  for (int i = notes.size() - 1; i >= 0; i--) {
+    Note note = notes.get(i);
+    note.move();
+    note.display(noteColor, xPos);
+    
+ 
+    if (note.y > height) {
+      notes.remove(i);
+    }
+  }
+}
+
+
+void spawnNotes() {
+  for (int i = 0; i < 100; i++) {
+    player1Notes.add(new Note(int(random(2000)), int(random(1, 5)))); 
+    player2Notes.add(new Note(int(random(2000)), int(random(1, 5)))); 
+  }
+}
+
+
+void keyPressed() {
+  // Player 1 controls (A, S, D, F)
+  if (key == 'a') {
+    checkHit(player1Notes, 1, 'A');
+  } else if (key == 's') {
+    checkHit(player1Notes, 2, 'S');
+  } else if (key == 'd') {
+    checkHit(player1Notes, 3, 'D');
+  } else if (key == 'f') {
+    checkHit(player1Notes, 4, 'F');
+  }
+  
+  // Player 2 controls (J, K, L, ;)
+  if (key == 'j') {
+    checkHit(player2Notes, 1, 'J');
+  } else if (key == 'k') {
+    checkHit(player2Notes, 2, 'K');
+  } else if (key == 'l') {
+    checkHit(player2Notes, 3, 'L');
+  } else if (key == ';') {
+    checkHit(player2Notes, 4, ';');
+  }
+}
+
+
+void checkHit(ArrayList<Note> notes, int lane, char keyPressed) {//taught me this part
+  for (int i = notes.size() - 1; i >= 0; i--) {
+    Note note = notes.get(i);
+    if (note.lane == lane && abs(note.y - height + 100) < 50) {
+      
+      if (keyPressed == 'A' || keyPressed == 'S' || keyPressed == 'D' || keyPressed == 'F') {
+        player1Score += 100;
+      } else {
+        player2Score += 100;
+      }
+      notes.remove(i);
+      break;
+    }
+  }
+}
+
+
+class Note {
+  float y;
+  float speed;
+  int lane;
+
+  Note(float delay, int lane) {
+    this.y = -delay; 
+    this.speed = 3;  
+    this.lane = lane; 
+  }
+
+
+  void move() {
+    y += speed;
+  }
+
+  void display(color c, int xPos) {
+    fill(c);
+    noStroke();
+    rect(xPos + (lane - 1) * 20, y, 20, 20); 
+  }
+}
